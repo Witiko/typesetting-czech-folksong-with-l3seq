@@ -1,0 +1,189 @@
+\RequirePackage{luatex85}
+\PassOptionsToPackage{shorthands=off}{babel}
+\makeatletter
+\disable@package@load{fontenc}
+\makeatother
+\let\oldlooseness=\looseness
+\documentclass{csbulletin}
+\selectlanguage{czech}
+\setcounter{secnumdepth}{3}
+\usepackage{luavlna}
+\usepackage[strict]{lua-widow-control}
+\usepackage{csquotes}
+\usepackage[
+  backend=biber,
+  style=iso-numeric,
+  sortlocale=cs,
+  autolang=other,
+  bibencoding=UTF8,
+  mincitenames=2,
+  maxcitenames=2,
+]{biblatex}
+\addbibresource{main.bib}
+\usepackage[
+  linesnumbered,
+  ruled,
+  vlined,
+]{algorithm2e}
+\renewcommand\algorithmcfname{Algoritmus}
+\usepackage{minted}
+\usemintedstyle{bw}
+\setminted{firstnumber=last, linenos}
+\newenvironment{mintedblock}{%
+  \par\vspace{\topsep}\vspace{\partopsep}%
+  \begingroup
+  \fvset{listparameters=\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}}%
+}{%
+  \endgroup
+  \par\vspace{\topsep}\vspace{\partopsep}%
+}
+\usepackage{multicol}
+\usepackage[
+  implicit=false,
+  hidelinks,
+]{hyperref}
+\newcommand\vref[1]{\ref{#1} na straně~\pageref{#1}}
+
+\newcommand\pkg{\textsf}
+
+\begin{document}
+
+\singlechars{czech}{AaIiVvOoUuSsZzKk}
+
+\title{Sazba textu české lidové písně „Když jsem já sloužil“ pomocí modulu \pkg{l3seq} jazyka expl3}
+\EnglishTitle{Typesetting Lyrics of Czech Folksong ``\foreignlanguage{czech}{Když jsem já sloužil}'' using the \pkg{l3seq} Module of Expl3 Language}
+\author{Vít Starý Novotný}
+\podpis{Vít Starý Novotný, witiko@mail.muni.cz}
+\maketitle[1ex]
+\vspace*{-0.75cm}
+
+\begin{abstract}
+Jazyk \TeX u vznikl pro sazbu knih a turingovsky úplným programovacím jazykem se stal až na konci svého vývoje. Zatímco příprava textu dokumentů a úpravy vzhledu jsou v \TeX u přímočaré, programování naráží na chybějící základní datové struktury a na odloženou expanzi maker, která neodpovídá běžnému vyhodnocování v moderních imperativních jazycích.
+
+Ve stroji Lua\TeX{} je možné programovat také v imperativním programovacím jazyce Lua. Jazyk Lua sice zmíněnými neduhy \TeX u netrpí, ale komunikace mezi \TeX em a Luou není přímočará a při předávání dat dochází ke ztrátě důležitých informací, jako jsou kategorie TeXových tokenů.
+
+Programovací jazyk expl3 nabízí zlatou střední cestu a umožňuje uživatelům programovat přímo v \TeX u způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků.
+V tomto článku představuji modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu demonstruji na sazbě textu české lidové písně \emph{Když jsem já sloužil}.
+\end{abstract}
+\klicovaslova: \LaTeX3, expl3, \pkg{l3seq}, \pkg{xparse}, texty písní
+\vspace*{0.35cm}
+
+\TeX{} je strojový kód světa digitální sazby, který programátorům poskytuje minimum vysokoúrovňových abstrakcí. V předchozím článku jsem představil vysokoúrovňový programovací jazyk expl3~\cite[sekce~2]{novotny2022vysokourovnove}, díky kterému mohou uživatelé programovat v \TeX u způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků. V dalším článku jsem představil modul \pkg{l3keys} jazyka expl3~\cite[sekce~3.2]{starynovotny2023napadovnik}, který umožňuje přípravu datových sběrnic. V tomto článku představuji modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu demonstruji na sazbě textu české lidové písně \emph{Když jsem já sloužil}~\cite{hroudova2015kdyz}.
+
+Nejprve v sekci~\ref{sec:algoritmus} popisuji algoritmus pro generování textu písně. V sekci~\vref{sec:implementace} algoritmus implementuji pomocí modulu \pkg{l3seq} jazyka expl3. Následně v sekci~\vref{sec:rozhrani} vytvářím uživatelské rozhraní pomocí \LaTeX ového balíčku \pkg{xparse}. Nakonec v sekci~\vref{sec:sazba} ukazuji vysázený text písně. V sekci~\vref{sec:zaver} shrnuji poznatky z článku a jejich přínos pro čtenáře.
+
+\section{Algoritmus pro generování textu písně}
+\label{sec:algoritmus}
+
+V této sekci představuji českou lidovou píseň \emph{Když jsem já sloužil}~\cite{hroudova2015kdyz}.
+Nejprve píseň zasazuji do historického kontextu a neformálně popisuji strukturu textu písně.
+Následně popisuji algoritmus pro generování textu písně.
+
+Píseň \emph{Když jsem já sloužil} je autobiografie mladého muže, který sloužil devět let jako zemědělský dělník. Vypravěč zmiňuje robotu a omezování sňatků vrchností, což děj zasazuje do dob Rakousko-Uherska před zrušením nevolnictví roku 1781.
+
+Text písně se dělí na sloky, které popisují jednotlivé roky vypravěčovy služby. První věta každé sloky udává rok služby a obdrženou odměnu, např.: ,,Když jsem já sloužil to \emph{3. léto}, vysloužil jsem si \emph{husičku} za to.`` Následuje dlouhé souvětí s popisem odměn za dosavadní roky služby počínaje současným rokem a konče prvním rokem, např.: ,,A ta husa chodí bosa a ta kačka bláto tlačká a to kuře krákoře, běhá po dvoře.`` Sloku zakončuje vypravěč domněnkou o aktivitách své partnerky, např.: ,,Má panenka pláče doma v komoře.``
+
+Pokud si odměny ve čtvrtém pádu (např. ,,husičku``) a popisy odměn (např. ,,ta husa chodí bosa``) uložíme do dvou seznamů \texttt{čtvrté\_pády} a \texttt{popisy} délky $N=9$, můžeme text písně vygenerovat Algoritmem~\ref{algo:algoritmus}. V algoritmu je použita funkce \textbf{zip}, která postupně navrací prvky obou seznamů jako dvojice.
+
+\begin{algorithm}
+\DontPrintSemicolon
+\KwData{Seznamy \texttt{čtvrté\_pády} a \texttt{popisy} délky \(N\)}
+$i\leftarrow 1$\;
+\texttt{popisy\_pozpátku}${}\leftarrow{}$[]\;
+\For{\textup{\texttt{čtvrtý\_pád}, \texttt{popis} \textbf{in} \textbf{zip}(\texttt{čtvrté\_pády}, \texttt{popisy})}}{
+    \eIf{\(i < N\)}{
+        \textbf{print} \texttt{"když jsem já sloužil to "} + \(i\) + \texttt{". léto"}\;
+    }{
+        \textbf{print} \texttt{"když jsem já sloužil poslední léto"}\;
+    }
+    \textbf{print} \texttt{"vysloužil jsem si "} + \texttt{čtvrtý\_pád} + \texttt{" za to"}\;
+    \texttt{popisy\_pozpátku}${}\leftarrow{}$[\texttt{popis}]${}+{}$\texttt{popisy\_pozpátku}\;
+    $j\leftarrow i$\;
+    \For{\textup{\texttt{popis\_pozpátku} \textbf{in} \texttt{popisy\_pozpátku}}}{
+        \eIf{\(j < N\)}{
+            \textbf{print} \texttt{"a "} + \texttt{popis\_pozpátku}\;
+        }{
+            \textbf{print} \texttt{popis\_pozpátku}\;
+        }
+        $j\leftarrow j-1$\;
+    }
+    \eIf{\(i < N\)}{
+        \textbf{print} \texttt{"má panenka pláče doma v komoře"}\;
+    }{
+        \textbf{print} \texttt{"má panenka stele postel v komoře"}\;
+    }
+    $i\leftarrow i+1$\;
+}
+\caption{Text písně \emph{Když jsem já sloužil}}
+\label{algo:algoritmus}
+\end{algorithm}
+
+\section{Implementace algoritmu pomocí modulu \pkg{l3seq}}
+\label{sec:implementace}
+
+V této sekci rozpracujeme soubor \texttt{kdyz-jsem-ja-slouzil.sty}, který bude implementovat Algoritmus~\ref{algo:algoritmus} pomocí modulu \pkg{l3seq} jazyka expl3. Hotový soubor \texttt{kdyz-jsem-ja-slouzil.sty} můžeme stáhnout online~\cite{starynovotny2023sazba}.
+
+\begin{mintedblock}
+\inputminted{tex}{kdyz-jsem-ja-slouzil-01.sty}
+\inputminted{tex}{kdyz-jsem-ja-slouzil-02.sty}
+\end{mintedblock}
+
+\section{Uživatelské rozhraní pomocí \LaTeX ového balíčku \pkg{xparse}}
+\label{sec:rozhrani}
+
+Programovací jazyk expl3 má pro uživatele \TeX u poměrně neobvyklou syntax. V této sekci ukončíme soubor \texttt{kdyz-jsem-ja-slouzil.sty} a pomocí \LaTeX ového balíčku vytvoříme uživatelské rozhraní, které bude pro uživatele přirozenější.
+
+\begin{mintedblock}
+\inputminted{tex}{kdyz-jsem-ja-slouzil-03.sty}
+\inputminted{tex}{kdyz-jsem-ja-slouzil-04.sty}
+\end{mintedblock}
+
+\section{Sazba textu písně}
+\label{sec:sazba}
+
+V této sekci vytvoříme a vysázíme ukázkový soubor \texttt{priklad.tex}. Soubor nejprve načte soubor \texttt{kdyz-jsem-ja-slouzil.sty}, který jsme připravili v sekcích \ref{sec:implementace} a \ref{sec:rozhrani}, a následně vysází text písně \emph{Když jsem já sloužil}.
+
+\begin{mintedblock}
+\inputminted[firstnumber=1]{tex}{example-01.tex}
+\inputminted{tex}{example-02.tex}
+\inputminted{tex}{example-03.tex}
+\end{mintedblock}
+
+\noindent
+Soubor vysázíme příkazem \texttt{lualatex priklad.tex} a obdržíme tento výstup:
+
+\input kdyz-jsem-ja-slouzil-00.sty
+\input kdyz-jsem-ja-slouzil-02.sty
+\input kdyz-jsem-ja-slouzil-04.sty
+\input kdyz-jsem-ja-slouzil-05.sty
+\input example-00.tex
+\begingroup
+\parindent=0pt
+\parskip=.5\baselineskip plus 2pt
+\input example-02.tex
+\par
+\endgroup
+
+\section{Závěr}
+\label{sec:zaver}
+
+Díky programovacímu jazyku expl3 mohou uživatelé \TeX u programovat způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků. V článku jsem představil modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu jsem demonstroval na sazbě textu české lidové písně \emph{Když jsem já sloužil}.
+
+\printbibliography
+
+\begin{summary}
+The language of \TeX{} was developed for typesetting books and only became a Turing-complete programming language at the end of its development. Whereas writing and designing documents is straightforward in \TeX, programming is difficult due to a lack of basic data structures and the delayed macro expansion, which is different from modern imperative programming languages.
+
+In the Lua\TeX{} engine, authors can also program in the imperative programming language of Lua. Although Lua does not share the limitations of \TeX, passing data between \TeX{} and Lua is not straightforward and important information such as token category codes are lost in transit.
+
+The expl3 programming language combines the best of both worlds and allows authors to program in \TeX{} in a way that is similar to modern imperative programming languages.
+In this article, I introduce the \pkg{l3seq} module of the expl3 language that provides the list data structure. Using the \pkg{l3seq} module, I typeset the lyrics of the Czech folksong \emph{Když jsem já sloužil}.
+
+\keywords: \LaTeX3, expl3, \pkg{l3seq}, \pkg{xparse}, song lyrics
+\end{summary}
+
+\directlua{
+  os.execute("cat example-01.tex example-02.tex example-03.tex > priklad.tex")
+  os.execute("cat kdyz-jsem-ja-slouzil-*.sty > kdyz-jsem-ja-slouzil.sty")
+}
+\end{document}
