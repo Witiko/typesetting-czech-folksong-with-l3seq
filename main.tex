@@ -81,7 +81,7 @@ Nejprve v sekci~\ref{sec:algoritmus} popisuji algoritmus pro generování textu 
 \label{sec:algoritmus}
 
 V této sekci představuji českou lidovou píseň \emph{Když jsem já sloužil}~\cite{hroudova2015kdyz}.
-Nejprve píseň zasazuji do historického kontextu a neformálně popisuji strukturu textu písně.
+Nejprve píseň zasazuji do historického kontextu a popisuji strukturu textu písně.
 Následně popisuji algoritmus pro generování textu písně.
 
 Píseň \emph{Když jsem já sloužil} je autobiografie mladého muže, který sloužil devět let jako zemědělský dělník. Vypravěč zmiňuje robotu a omezování sňatků vrchností, což děj zasazuje do dob Rakousko-Uherska před zrušením nevolnictví roku 1781.
@@ -187,7 +187,7 @@ Následně vytvoříme ukázkový soubor \texttt{priklad-optex}. Soubor nejprve 
 \noindent
 Soubor zpracujeme příkazem \texttt{optex priklad-optex} a obdržíme výstup ze sekce~\ref{sec:sazba}.
 
-Nyní porovnáme implementaci v jazyce expl3 ze sekcí \ref{sec:implementace} a \ref{sec:rozhrani} s implementací v jazyce plain \TeX{} z této sekce. Implementace v jazyce expl3 má takřka dvojnásobnou délku. Délkový rozdíl je způsobený především rozvláčností jazyka expl3, ne složitostí kódu, a dopad na čitelnost kódu je tedy sporný. Implementace seznamů v plain \TeX u není přímočará a vyžaduje opatrnou práci s expanzí. Implementace z této sekce se proto seznamům vyhýbá a nahrazuje je hašovou tabulkou. Díky tomu je implementace v plain \TeX u stručná a čitelná, ale tato čitelnost je na úkor obecnosti. Programátor se musí přizpůsobit omezením plain \TeX u a připravit kód na míru řešenému problému. zatímco jazyk expl3 disponuje bohatou knihovnou datových struktur, které je možné používat pro řešení různých problémů.
+Nyní porovnáme implementaci v jazyce expl3 ze sekcí \ref{sec:implementace} a \ref{sec:rozhrani} s implementací v jazyce plain \TeX{} z této sekce. Implementace v jazyce expl3 má takřka dvojnásobnou délku. Délkový rozdíl je způsobený především rozvláčností jazyka expl3, ne složitostí kódu, a dopad na čitelnost kódu je tedy sporný. Implementace seznamů v plain \TeX u není přímočará a vyžaduje opatrnou práci s expanzí. Implementace z této sekce se proto seznamům vyhýbá a nahrazuje je hašovou tabulkou. Díky tomu je implementace v plain \TeX u stručná a čitelná, ale není obecná: Programátor se musí přizpůsobit omezením plain \TeX u a připravit kód na míru řešenému problému, zatímco jazyk expl3 disponuje bohatou knihovnou datových struktur, které je možné použít pro řešení různých problémů.
 
 \section{Závěr}
 \label{sec:zaver}
