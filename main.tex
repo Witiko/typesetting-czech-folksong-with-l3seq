@@ -20,6 +20,8 @@
   bibencoding=UTF8,
   mincitenames=2,
   maxcitenames=2,
+  isbn=false,
+  shortnumeration=true,
 ]{biblatex}
 \addbibresource{main.bib}
 \usepackage[
@@ -46,6 +48,7 @@
 ]{hyperref}
 \newcommand\vref[1]{\ref{#1} na straně~\pageref{#1}}
 
+\newcommand\acro[1]{\textsc{\MakeLowercase{#1}}}
 \newcommand\pkg{\textsf}
 
 \begin{document}
@@ -178,7 +181,7 @@ V této sekci vytvoříme soubor \texttt{kdyz-jsem-ja-slouzil.opm}, který bude 
 \inputminted[firstnumber=1]{tex}{kdyz-jsem-ja-slouzil.opm}
 \end{mintedblock}
 
-Následně vytvoříme ukázkový soubor \texttt{priklad-optex}. Soubor nejprve načte soubor \texttt{kdyz-jsem-ja-slouzil.opm}, který jsme připravili v této sekci, a následně vysází text písně \emph{Když jsem já sloužil}.
+Následně vytvoříme ukázkový soubor \texttt{priklad-optex.tex}. Soubor nejprve načte soubor \texttt{kdyz-jsem-ja-slouzil.opm}, který jsme připravili v této sekci, a následně vysází text písně \emph{Když jsem já sloužil}.
 
 \begin{mintedblock}
 \inputminted[firstnumber=1]{tex}{example-optex.tex}
@@ -187,7 +190,72 @@ Následně vytvoříme ukázkový soubor \texttt{priklad-optex}. Soubor nejprve 
 \noindent
 Soubor zpracujeme příkazem \texttt{optex priklad-optex} a obdržíme výstup ze sekce~\ref{sec:sazba}.
 
-Nyní porovnáme implementaci v jazyce expl3 ze sekcí \ref{sec:implementace} a \ref{sec:rozhrani} s implementací v jazyce plain \TeX{} z této sekce. Implementace v jazyce expl3 má takřka dvojnásobnou délku. Délkový rozdíl je způsobený především rozvláčností jazyka expl3, ne složitostí kódu, a dopad na čitelnost kódu je tedy sporný. Implementace seznamů v plain \TeX u není přímočará a vyžaduje opatrnou práci s expanzí. Implementace z této sekce se proto seznamům vyhýbá a nahrazuje je hašovou tabulkou. Díky tomu je implementace v plain \TeX u stručná a čitelná, ale není obecná: Programátor se musí přizpůsobit omezením plain \TeX u a připravit kód na míru řešenému problému, zatímco jazyk expl3 disponuje bohatou knihovnou datových struktur, které je možné použít pro řešení různých problémů.
+Nyní porovnáme implementaci v jazyce expl3 ze sekcí \ref{sec:implementace} a \ref{sec:rozhrani}\, s implementací v jazyce plain \TeX{} z této sekce. Implementace v jazyce expl3 má takřka dvojnásobnou délku. Délkový rozdíl je způsobený především rozvláčností jazyka expl3, ne složitostí kódu, a dopad na čitelnost kódu je tedy sporný.
+
+Implementace seznamů v plain \TeX u není přímočará a vyžaduje opatrnou práci s expanzí. Implementace z této sekce se proto seznamům vyhýbá a nahrazuje je hašovou tabulkou. Díky tomu je implementace v plain \TeX u stručná a čitelná, ale není obecná: Programátor se musí přizpůsobit omezením plain \TeX u a připravit kód na míru řešenému problému, zatímco jazyk expl3 disponuje bohatou knihovnou datových struktur, které je možné použít pro řešení různých problémů.
+
+Recenzent článku navrhl ještě jednodušší řešení v idiomatickém plain \TeX u, které implementaci algoritmu nevyčleňuje do samostatného balíčku a které jednotlivé sloky okamžitě sází, aniž by si je předtím ukládalo do datové struktury. Navržené řešení s drobnými úpravami uvádím se svolením recenzenta:
+
+\begin{mintedblock}
+\begin{minted}[firstnumber=1]{tex}
+\fontfam [LMFonts]
+\parskip = 6pt plus 2pt
+\parindent = 0pt
+\def \sloka #1#2#3{\par
+  \ifx^#3^\else
+    \edef \popisy {%
+      #3\ifx \popisy \empty \else \nl a \fi \popisy
+    }%
+  \fi
+  Když jsem já sloužil #1 léto,\nl
+  vysloužil jsem si #2 za to.\nl
+  A \popisy, běhá po dvoře,\nl
+  má panenka \cosidela.\par
+}
+\def \popisy {}
+\def \cosidela {pláče doma v komoře}
+\sloka {to první}  {kuřátko}   {to kuře krákoře}
+\sloka {to druhé}  {kachničku} {ta kačka bláto tlačká}
+\sloka {to třetí}  {husičku}   {ta husa chodí bosa}
+\sloka {to čtvrté} {vepříka}   {ten vepř jako pepř}
+\sloka {to páté}   {telátko}   {to tele hubou mele}
+\sloka {to šesté}  {kravičku}  {ta kráva mléko dává}
+\sloka {to sedmé}  {volečka}   {ten vůl jako kůl}
+\sloka {to osmé}   {botičky}   {ty boty do roboty}
+\def \cosidela {stele postel v komoře}
+\sloka {poslední}  {děvčátko}  {}
+\bye
+\end{minted}
+\end{mintedblock}
+
+Toto řešení pěkně ilustruje výhody jazyka expl3, protože se odchyluje od požadovaného textu písně: Popis odměn v posledním roce začíná slovy ,,A ty boty do roboty`` namísto ,,To děvčátko jak poupátko``. Oprava této chyby není přímočará a vyžaduje přepis většiny makra \verb"\sloka":
+
+\begin{mintedblock}
+\begin{minted}[firstnumber=4]{tex}
+\def \sloka #1#2#3{\par
+  \edef \popisy {%
+    #3\ifx \popisy \empty \else \nl a \fi \popisy
+  }%
+  Když jsem já sloužil #1 léto,\nl
+  vysloužil jsem si #2 za to.\nl
+  \edef \cislosloky {#1}%
+  \edef \posledni   {poslední}%
+  \ifx \cislosloky  \posledni
+    \def \prvnivelke ##1{\uppercase {##1}}%
+    \expandafter \prvnivelke \popisy
+  \else
+    A \popisy
+  \fi, běhá po dvoře\nl
+  má panenka \cosidela.\par
+}
+\end{minted}
+\end{mintedblock}
+
+\noindent
+Poslední sloku po této úpravě vysázíme následně: \verb"\sloka{poslední}{děvčátko}"
+\verb"{to děvčátko jak poupátko}".
+
+V naší implementaci v jazyce expl3 ze sekce~\ref{sec:implementace} by pro podobnou změnu stačilo upravit existující řádky 71--77. Vestavěná funkce \verb"\str_uppercase:f" jazyka expl3 pro kapitalizaci prvního písmene navíc podporuje znaky s diakritikou, zatímco \TeX ový primitiv \verb"\uppercase" umí pracovat jen s 52 písmeny znakové sady \acro{ASCII}.
 
 \section{Závěr}
 \label{sec:zaver}
@@ -197,7 +265,9 @@ Díky programovacímu jazyku expl3 mohou uživatelé \TeX u programovat způsobe
 V článku jsem představil modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu jsem demonstroval na sazbě textu české lidové písně \emph{Když jsem já sloužil}.
 Dále jsem ukázal, že text písně je možné stručně a čitelně vysázet v také jazyce plain \TeX{}, pokud se programátor přizpůsobí omezenému počtu základních datových struktur v plain \TeX u.
 
-\printbibliography
+\section*{Odkazy}
+\vspace*{-0.1cm}
+\printbibliography[heading=none]
 
 \begin{summary}
 The language of plain \TeX{} was developed for typesetting books and only became a Turing-complete programming language at the end of its development. Whereas writing and designing documents is straightforward in plain \TeX, programming is difficult due to a lack of basic data structures and the delayed macro expansion, which is different from modern imperative programming languages.
