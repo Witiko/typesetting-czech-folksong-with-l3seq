@@ -57,12 +57,12 @@
 \author{Vít Starý Novotný}
 \podpis{Vít Starý Novotný, witiko@mail.muni.cz}
 \maketitle[1ex]
-\vspace*{-1.5cm}
+\vspace*{-1.25cm}
 
 \begin{abstract}
 Jazyk plain \TeX{} vznikl pro sazbu knih a turingovsky úplným programovacím jazykem se stal až na konci svého vývoje. Zatímco příprava textu dokumentů a úpravy vzhledu jsou v plain \TeX u přímočaré, programování naráží na chybějící základní datové struktury a na odloženou expanzi maker, která neodpovídá běžnému vyhodnocování v moderních imperativních jazycích.
 
-Ve stroji Lua\TeX{} je možné programovat také v imperativním programovacím jazyce Lua. Jazyk Lua sice zmíněnými neduhy plain \TeX u netrpí, ale komunikace mezi \TeX em a Luou není přímočará a při předávání dat dochází ke ztrátě důležitých informací, jako jsou kategorie TeXových znaků.
+Ve stroji Lua\TeX{} je možné programovat také v imperativním programovacím jazyce Lua. Jazyk Lua sice zmíněnými neduhy plain \TeX u netrpí, ale komunikace mezi \TeX em a Luou není přímočará a při předávání dat dochází ke ztrátě důležitých informací, jako jsou kategorie \TeX ových znaků.
 
 Programovací jazyk expl3 nabízí zlatou střední cestu a umožňuje uživatelům programovat v \TeX u způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků.
 
@@ -71,9 +71,9 @@ Implementaci v jazyce expl3 porovnávám s implementací v plain \TeX u.
 \end{abstract}
 \vspace*{0.15cm}
 \klicovaslova: \LaTeX3, expl3, \pkg{l3seq}, \pkg{xparse}, plain \TeX, Op\TeX, texty písní
-\vspace*{1.25cm}
+\vspace*{1cm}
 
-\TeX{} je strojový kód světa digitální sazby, který programátorům poskytuje minimum vysokoúrovňových abstrakcí. V předchozím článku jsem představil vysokoúrovňový programovací jazyk expl3~\cite[sekce~2]{novotny2022vysokourovnove}, díky kterému mohou uživatelé programovat v \TeX u způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků. V dalším článku jsem představil modul \pkg{l3keys} jazyka expl3~\cite[sekce~3.2]{starynovotny2023napadovnik}, který umožňuje přípravu datových sběrnic. V tomto článku představuji modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu demonstruji na sazbě textu české lidové písně \emph{Když jsem já sloužil}~\cite{hroudova2015kdyz}. Implementaci v jazyce expl3 porovnávám s implementací v plain \TeX u.
+\TeX{} je strojový kód světa digitální sazby, který programátorům poskytuje minimum vysokoúrovňových abstrakcí. V předchozím článku~\cite[sekce~2]{novotny2022vysokourovnove} jsem představil vysokoúrovňový programovací jazyk expl3~\cite{latex2023expl3, latex2023interfaces}, díky kterému mohou uživatelé programovat v \TeX u způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků. V dalším článku jsem představil modul \pkg{l3keys} jazyka expl3~\cite[sekce~3.2]{starynovotny2023napadovnik}, který umožňuje přípravu datových sběrnic. V tomto článku představuji modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu demonstruji na sazbě textu české lidové písně \emph{Když jsem já sloužil}~\cite{hroudova2015kdyz}. Implementaci v jazyce expl3 porovnávám s implementací v plain \TeX u.
 
 Nejprve v sekci~\ref{sec:algoritmus} popisuji algoritmus pro generování textu písně. V sekci~\vref{sec:implementace} algoritmus implementuji pomocí modulu \pkg{l3seq} jazyka expl3. Následně v sekci~\vref{sec:rozhrani} vytvářím uživatelské rozhraní pomocí \LaTeX ového balíčku \pkg{xparse}. Dále v sekci~\vref{sec:sazba} ukazuji vysázený text písně. Nakonec v sekci~\vref{sec:plain} algoritmus implementuji v plain \TeX u a porovnávám obě implementace. V sekci~\vref{sec:zaver} shrnuji poznatky z článku a jejich přínos pro čtenáře.
 
