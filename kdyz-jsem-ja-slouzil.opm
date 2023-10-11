@@ -11,7 +11,7 @@
 % implementovány jako hašová tabulka.
 \def \.sdef #1{\expandafter \def \csname #1\endcsname}
 \def \.suse #1{\csname #1\endcsname}
-% Pomocná funkce pro kapitalizaci prvního písmene.
+% Pomocná funkce pro změnu prvního písmene na verzálku.
 \def \.prvnivelke #1{\uppercase \expandafter {#1}}
 
 % Funkce pro uložení jedné sloky
@@ -43,11 +43,11 @@
       \loop
       % Při popisu odměny pro současný rok začni verzálkou.
       \ifnum \.cisloradku = \.cislosloky
-        % V poslední sloce vynech počáteční spojku „A“
-        % a kapitalizuj první písmeno popisu odměny.
+        % V poslední sloce vynech počáteční spojku „A“.
         \ifnum \.cislosloky < \.pocetslok A \else
           \expandafter \expandafter \expandafter
-          \expandafter \expandafter \.prvnivelke
+          \expandafter \expandafter
+          \.prvnivelke
         \fi
       \else a \fi
       \.suse {popis:\the \.cisloradku}%
