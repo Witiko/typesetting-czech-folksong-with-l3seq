@@ -8,7 +8,7 @@
 \newcount \.cislosloky
 \newcount \.cisloradku
 % Pomocné funkce pro práci se seznamy, které jsou zde
-% implementované jako hašová tabulka.
+% implementovány jako hašová tabulka.
 \def \.sdef #1{\expandafter \def \csname #1\endcsname}
 \def \.suse #1{\csname #1\endcsname}
 % Pomocná funkce pro kapitalizaci prvního písmene.
