@@ -209,11 +209,11 @@ Recenzent článku navrhl ještě jednodušší řešení v idiomatickém plain 
   \fi
   Když jsem já sloužil #1 léto,\nl
   vysloužil jsem si #2 za to.\nl
-  A \popisy, běhá po dvoře,\nl
-  má panenka \cosidela.\par
+  \A \popisy, běhá po dvoře,\nl
+  má panenka \cosidela v komoře.\par
 }
 \def \popisy {}
-\def \cosidela {pláče doma v komoře}
+\def \cosidela {pláče doma }   \def \A {A }
 \sloka {to první}  {kuřátko}   {to kuře krákoře}
 \sloka {to druhé}  {kachničku} {ta kačka bláto tlačká}
 \sloka {to třetí}  {husičku}   {ta husa chodí bosa}
@@ -222,56 +222,32 @@ Recenzent článku navrhl ještě jednodušší řešení v idiomatickém plain 
 \sloka {to šesté}  {kravičku}  {ta kráva mléko dává}
 \sloka {to sedmé}  {volečka}   {ten vůl jako kůl}
 \sloka {to osmé}   {botičky}   {ty boty do roboty}
-\def \cosidela {stele postel v komoře}
-\sloka {poslední}  {děvčátko}  {}
+\def \cosidela {stele postel } \def \A {}
+\sloka {poslední}  {děvčátko}  {To děvčátko jak poupátko}
 \bye
 \end{minted}
 \end{mintedblock}
 
-Toto řešení pěkně ilustruje výhody jazyka expl3, protože se odchyluje od požadovaného textu písně: Popis odměn v posledním roce začíná slovy ,,A ty boty do roboty`` namísto ,,To děvčátko jak poupátko``. Oprava této chyby není přímočará a vyžaduje přepis většiny makra \verb"\sloka":
-
-\begin{mintedblock}
-\begin{minted}[firstnumber=4]{tex}
-\def \sloka #1#2#3{\par
-  \edef \popisy {%
-    #3\ifx \popisy \empty \else \nl a \fi \popisy
-  }%
-  Když jsem já sloužil #1 léto,\nl
-  vysloužil jsem si #2 za to.\nl
-  % V poslední sloce vynech počáteční spojku „A“
-  % a vysázej první písmeno popisu odměny verzálkou.
-  \edef \cislosloky {#1}%
-  \edef \posledni   {poslední}%
-  \ifx \cislosloky  \posledni
-    \def \prvnivelke ##1{\uppercase {##1}}%
-    \expandafter \prvnivelke \popisy
-  \else
-    A \popisy
-  \fi, běhá po dvoře\nl
-  má panenka \cosidela.\par
-}
-\end{minted}
-\end{mintedblock}
-
-\noindent
-Poslední sloku po této úpravě vysázíme následně: \verb"\sloka{poslední}{děvčátko}"
-\verb"{to děvčátko jak poupátko}".
-
-V naší implementaci v jazyce expl3 ze sekce~\ref{sec:implementace} by pro podobnou změnu stačilo upravit jen řádky 71--77 z funkce \verb"\kdyzjsemjaslouzil_vysazej_sloku:nn".
-
 \section{Závěr}
 \label{sec:zaver}
+
+\vspace*{-0.1cm}
 
 Díky programovacímu jazyku expl3 mohou uživatelé \TeX u programovat způsobem, na který jsou zvyklí z moderních imperativních programovacích jazyků.
 
 V článku jsem představil modul \pkg{l3seq} jazyka expl3, který poskytuje datovou strukturu seznamu. Možnosti modulu jsem demonstroval na sazbě textu české lidové písně \emph{Když jsem já sloužil}.
 Dále jsem ukázal, že text písně je možné stručně a čitelně vysázet také v jazyce plain \TeX{}, pokud se programátor přizpůsobí omezenému počtu základních datových struktur v plain \TeX u.
 
+\vspace*{-0.1cm}
+
 \section*{Odkazy}
 \vspace*{-0.1cm}
 \printbibliography[heading=none]
 
+\vspace*{-0.1cm}
+
 \begin{summary}
+\vspace*{-0.1cm}
 The language of plain \TeX{} was developed for typesetting books and only became a Turing-complete programming language at the end of its development. Whereas writing and designing documents is straightforward in plain \TeX, programming is difficult due to a lack of basic data structures and the delayed macro expansion, which is different from modern imperative programming languages.
 
 In the Lua\TeX{} engine, authors can also program in the imperative programming language of Lua. Although Lua does not share the limitations of plain \TeX, passing data between \TeX{} and Lua is not straightforward and important information such as token category codes are lost in transit.
