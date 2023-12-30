@@ -1,8 +1,8 @@
 # Sazba textu české lidové písně „Když jsem já sloužil“ pomocí modulu l3seq jazyka expl3
 
 Tento repozitář obsahuje zdrojový kód článku *Sazba textu české lidové písně
-„Když jsem já sloužil“ pomocí modulu l3seq jazyka expl3*, který se chystám
-zveřejnit ve Zpravodaji CSTUGu.
+„Když jsem já sloužil“ pomocí modulu l3seq jazyka expl3* ze Zpravodaje CSTUGu
+2023/3–4.
 
 PDF dokument [`main.pdf`][1] s textem článku vysázíme následujím příkazem:
 
@@ -23,3 +23,21 @@ a soubor [`priklad-optex.tex`][5] s ukázkou použití balíčku.
  [3]: https://github.com/Witiko/typesetting-czech-folksong-with-l3seq/releases/download/latest/priklad-latex.tex
  [4]: https://github.com/Witiko/typesetting-czech-folksong-with-l3seq/releases/download/latest/kdyz-jsem-ja-slouzil.opm
  [5]: https://github.com/Witiko/typesetting-czech-folksong-with-l3seq/releases/download/latest/priklad-optex.tex
+
+## Citace
+
+Pro citování tohoto článku použijte následující kód pro BibLaTeX:
+
+``` bib
+@article{starynovotny2023sazba,
+  title = {Sazba textu české lidové písně „Když jsem já sloužil“ pomocí modulu l3seq jazyka expl3},
+  author = {Starý Novotný, Vít},
+  journal = {Zpravodaj \CSTUG u},
+  issn = {1211-6661},
+  year = {2023},
+  volume = {33},
+  number = {3--4},
+  doi = {10.5300/2023-3-4/153},
+  pages = {153-164},
+}
+```
